@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>农业大棚管理系统界面</title>
+
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../js/jquery.js"></script>
+
+<script type="text/javascript">
+$(function(){	
+	//导航切换
+	$(".menuson li").click(function(){
+		$(".menuson li.active").removeClass("active")
+		$(this).addClass("active");
+	});
+	
+	$('.title').click(function(){
+		var $ul = $(this).next('ul');
+		$('dd').find('ul').slideUp();
+		if($ul.is(':visible')){
+			$(this).next('ul').slideUp();
+		}else{
+			$(this).next('ul').slideDown();
+		}
+	});
+})
+//获取大棚id-------------------------------------------------------------------------------------------------------------
+function getParent_id(){
+    var result;
+    var url=decodeURI(window.location.search); //获取url中"?"符后的字串
+    if(url.indexOf("?") != -1) {
+        result = url.substr(url.indexOf("=")+1);
+    }
+    return result;
+}
+let Child_id=getParent_id();
+
+//将大棚id传入产出页面-----------------------------------------------------------------------------------------------------
+function getMatureCropRecordTable(){
+    window.parent.frames['rightFrame'].location="../maturecrop_list/maturecrop_list.html?value="+Child_id;
+}
+//将大棚id传入化肥页面
+function getFertilizerRecordTable(){
+    window.parent.frames['rightFrame'].location="../fertilizer_list/fertilizer_list.html?value="+Child_id;
+}
+
+</script>
+
+
+</head>
+
+<body style="background:#f0f9fd;">
+	<div class="lefttop"><span></span>大棚数据管理</div>
+    <dl class="leftmenu">
+    
+    <dd>
+    <div class="title">
+    <span><img src="../images/leftico02.png" /></span>作物管理</div>
+    <ul class="menuson">
+        <li><cite></cite><a href="#">查看作物</a><i></i></li>
+        </ul>
+    </dd> 
+    
+    
+    <dd><div class="title"><span><img src="../images/leftico03.png" /></span>化肥管理</div>
+    <ul class="menuson">
+        <li><cite></cite><a onclick="getFertilizerRecordTable()">查看化肥</a><i></i></li>
+    </ul>    
+    </dd>  
+
+
+    <dd><div class="title"><span><img src="../images/leftico04.png" /></span>产出管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a onclick="getMatureCropRecordTable()">查看产出</a><i></i></li>
+        </ul>
+    </dd>
+
+    <dd><div class="title"><span><img src="../images/leftico04.png" /></span>传感器管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="#">查看传感器信息</a><i></i></li>
+            <!--        查看预警信息内包含内容：预警信息表（导出、排序、统计）-->
+            <li><cite></cite><a href="#">处理预警信息</a><i></i></li>
+        </ul>
+    </dd>
+
+        <dd><div class="title"><span><img src="../images/leftico04.png" /></span>实时监测大屏</div>
+                <ul class="menuson">
+                    <li><cite></cite><a href="#">查看大屏</a><i></i></li>
+                </ul>
+        </dd>
+
+    </dl>
+</body>
+</html>

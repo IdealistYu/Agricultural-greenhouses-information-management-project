@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DataTable</title>
+</head>
+<link rel="stylesheet" type="text/css" href="../css/dataTables.bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<style>
+    .SortSure,.SortCancel,.AddSure{
+        width:96px; height:35px; line-height:35px; color:#fff; background:url(../images/btnbg1.png) repeat-x; font-size:14px; font-weight:bold;border-radius: 3px; cursor:pointer;
+    }
+    .SortCancel{
+        background:url(../images/btnbg2.png) repeat-x;color:#000;font-weight:normal;
+    }
+    .SortTip {
+        width: 485px;
+        height: 150px;
+        position: absolute;
+        top: 10%;
+        left: 30%;
+        background: #fcfdfd;
+        box-shadow: 1px 8px 10px 1px #9b9b9b;
+        border-radius: 1px;
+        behavior: url(../js/pie.htc);
+        display: none;
+        z-index: 111111;
+    }
+</style>
+
+<body onload="initDataTable()">
+<!--位置div-->
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">首页</a></li>
+        <li><a href="#">设备列表</a></li>
+    </ul>
+</div>
+<!--toolBar-->
+<div class="rightinfo">
+
+    <div class="tools">
+
+        <ul class="toolbar">
+            <li onclick="AddShow()"><img src="../images/t01.png" />添加</li>
+            <li onclick="window.location.href='Statistics.html'"><img src="../images/t04.png" />统计</li>
+            <li onclick="Export()"><img src="../images/export.png" />导出</li>
+            <li onclick="Print()"><img src="../images/print.png" />打印</li>
+            <li onclick="Order()"><img src="../images/sort.png" />排序</li>
+        </ul>
+
+
+        <ul class="toolbar1">
+            <li><img src="../images/t05.png" />设置</li>
+        </ul>
+    </div>
+    <div style="position: relative; width: 90%">
+        <table class="table table-striped table-bordered table-hover datatable" id="record_list">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#record_list .checkboxes" /></th>
+                <th>设备ID</th>
+                <th>设备编号</th>
+                <th>设备名称</th>
+                <th>设备价格</th>
+                <th>设备生产公司</th>
+                <th>设备所属大棚</th>
+                <th>设备工作状态</th>
+                <th>设备修改日期</th>
+                <th>填写操作</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="tip" id="tip">
+        <div class="tiptop"><span>提示信息</span><a></a></div>
+
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p id="flag"></p>
+                <cite><a href="" id="txtDownLoadHref">[点击下载txt]</a></cite>
+                <cite><a href="" id="excelDownLoadHref">[点击下载excel]</a></cite>
+            </div>
+        </div>
+    </div>
+
+    <div class="tip" id="add_tip" style="background: #eeeeee; height: 500px;" >
+        <div class="tiptop"><span>增加提示</span><a></a></div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0);">
+            <label style="position: relative; width: 20%; float: left">设备编号</label>
+            <label>
+                <input id="deviceNum" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">设备名称</label>
+            <label>
+                <input id="deviceName" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">设备制造公司</label>
+            <label>
+                <input id="deviceCompany" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">设备价格</label>
+            <label>
+                <input id="devicePrice" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">设备所属大棚</label>
+            <select id="deviceLocation">
+            </select>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">设备状态</label>
+            <select id="deviceStatus">
+                <option>正在运行</option>
+                <option>停止工作</option>
+            </select>
+        </div>
+
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="AddSure" value="添加" onclick="AddDevice()"/>
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <div class="tip" id="modify_tip" style="background: #eeeeee; height: 400px; top: 20px" >
+        <div class="tiptop"><span>修改提示</span><a></a></div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原始设备编号:</label>
+                <b id="oldDeviceNum"></b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新设备编号:</label>
+                <input type="text" id="newDeviceNum"/>
+            </div>
+        </div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原始设备所属大棚:</label>
+                <b id="oldDeviceLocation"></b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新设备所属大棚:</label>
+                <select id="newDeviceLocation">
+                </select>
+            </div>
+        </div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative; width: 50%; float: left">原始设备状态:</label>
+                <b id="oldDeviceStatus"></b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label>新设备状态:</label>
+                <select id="newDeviceStatus">
+                    <option>正在运行</option>
+                    <option>停止工作</option>
+                </select>
+
+            </div>
+        </div>
+
+
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="AddSure" style="position:relative; left: 50%; right: 50%;" value="修改" onclick="ModifyDeviceRecord()"/>
+        </div>
+
+    </div>
+
+
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery.uniform.min.js"></script>
+<script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+
+<script>
+
+    function AddShow(){
+        let greenhouse=[];
+        let addTip=document.getElementById("add_tip");
+        for(let i=0;i<result.length;i++){
+            if (!greenhouse.includes(result[i].deviceLocation)){
+                greenhouse.push(result[i].deviceLocation);
+            }
+        }
+        console.log(greenhouse)
+        let option="";
+        for(let i=0; i<greenhouse.length;i++){
+            option+="<option>"+greenhouse[i]+"</option>";
+        }
+        document.getElementById("deviceLocation").innerHTML=option;
+        addTip.style.display="block";
+
+    }
+    function  AddDevice(){
+        let deviceNum=document.getElementById("deviceNum").value;
+        let deviceName=document.getElementById("deviceName").value;
+        let deviceCompany=document.getElementById("deviceCompany").value;
+        let devicePrice=document.getElementById("devicePrice").value;
+        let deviceLocation=document.getElementById("deviceLocation").value;
+        let deviceStatus=document.getElementById("deviceStatus").value;
+        if(deviceNum==="" || deviceName==="" || deviceCompany==="" || devicePrice===""){
+            alert("请填写完整信息");
+        }
+
+        let message={};
+        message.Action="addDeviceInfo";
+        message.deviceNum=deviceNum;
+        message.deviceName=deviceName;
+        message.deviceCompany=deviceCompany;
+        message.devicePrice=devicePrice;
+        message.deviceLocation=deviceLocation;
+        message.deviceStatus=deviceStatus;
+        let url="../device_file_servlet_action";
+        $.post(url,message,function(json){
+            if(json.ok===200){
+                // 重新加载页面
+                alert("添加成功!");
+                window.location.reload();
+            }else{
+                alert("添加失败，请确定联网，稍后重试!");
+            }
+        })
+
+    }
+
+    let result=[];
+
+    function Export() {
+        // 建议JAVA后端查询得到的JSON直接导出，而不是前端向后端传递JSON再导出
+        let message = {};
+        let url = "../device_file_servlet_action"
+        message.Action = "exportFile";
+        message.tableName='deviceinfo';
+        message.json = result.toString();
+        console.log(result.toString());
+        $.post(url, message, function (json) {
+            if (json.ok === 200) {
+                tip.style.display="block";
+                document.getElementById("flag").innerText="导出成功!";
+                $("#txtDownLoadHref").attr("href",json.txtDownloadPath);
+                $("#excelDownLoadHref").attr("href",json.excelDownloadPath);
+            } else {
+                alert("导出失败！")
+            }
+        });
+    }
+    function initDataTable(){
+        $(".sure").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        // 2.弹窗的取消
+        $(".cancel").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        $(".tiptop a").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        init();
+    }
+    function Print(){
+        window.open("print.html");
+    }
+    function Order() {
+        alert("点击表头进行排序")
+    }
+    function Search() {
+        alert("点击过滤进行查询")
+    }
+    function init(){
+        $('.datatable').dataTable({
+            "paging": true,
+            "searching": true,
+            "oLanguage": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "sProcessing": "处理中...",
+                "sLengthMenu": "_MENU_ 记录/页",
+                "sZeroRecords": "没有匹配的记录",
+                "sInfo": "显示第 _START_ 至 _END_ 项记录，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示第 0 至 0 项记录，共 0 项",
+                "sInfoFiltered": "(由 _MAX_ 项记录过滤)",
+                "sInfoPostFix": "",
+                "sSearch": "查询:",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上页",
+                    "sNext": "下页",
+                    "sLast": "末页"
+                }
+            },
+            "aoColumns": [{
+                "mRender": function (data, type, full) {
+                    result.push(full);
+                    sReturn = '<input type="checkbox" class="checkboxes" value="' + data + '"/>';
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.deviceId+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.deviceNum+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.deviceName+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn ="<div>"+full.devicePrice+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.deviceCompany+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.deviceLocation+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.deviceStatus+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    result.push(full);
+                    sReturn = "<div>"+full.deviceModifyTime+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    result.push(full);
+                    sReturn = "<a href=\"javascript:ModifyDevice("+full.deviceId+")\">【修改设备信息】</a><a href=\"javascript:DeleteDevice(" + full.deviceId + ")\">【删除设备】</a>";
+                    return sReturn;
+                }, "orderable": true
+            }],
+            "aLengthMenu": [[5, 10, 15, 20, 25, 40, 50, -1], [5, 10, 15, 20, 25, 40, 50, "所有记录"]],
+            "fnDrawCallback": function () {
+                $(".checkboxes").uniform();
+                $(".group-checkable").uniform();
+            },
+            "sAjaxSource": "../device_file_servlet_action?Action=getDeviceRecord"
+        });
+        $('.datatable').find('.group-checkable').change(function () {
+            var set = jQuery(this).attr("data-set");
+            var checked = jQuery(this).is(":checked");
+            jQuery(set).each(function () {
+                if (checked) {
+                    $(this).attr("checked", true);
+                    $(this).parents('tr').addClass("active");
+                } else {
+                    $(this).attr("checked", false);
+                    $(this).parents('tr').removeClass("active");
+                }
+            });
+            jQuery.uniform.update(set);
+        });
+        $('.datatable').on('change', 'tbody tr .checkboxes', function () {
+            $(this).parents('tr').toggleClass("active");
+        });
+    };
+
+    let modifyid;
+    function ModifyDevice(id){
+        modifyid=id;
+        document.getElementById("modify_tip").style.display="block";
+        let greenhouse=[];
+        for(let i=0;i<result.length;i++){
+            if (!greenhouse.includes(result[i].deviceLocation)){
+                greenhouse.push(result[i].deviceLocation);
+            }
+        }
+        let option="";
+        for(let i=0; i<greenhouse.length;i++){
+            option+="<option>"+greenhouse[i]+"</option>";
+        }
+        document.getElementById("newDeviceLocation").innerHTML=option;
+
+        for(let i=0;i<result.length;i++){
+            if(id==result[i].deviceId){
+                document.getElementById("oldDeviceNum").innerText=result[i].deviceNum;
+                document.getElementById("oldDeviceLocation").innerText=result[i].deviceLocation;
+                document.getElementById("oldDeviceStatus").innerText=result[i].deviceStatus;
+            }
+        }
+    }
+
+    function ModifyDeviceRecord(){
+        let message={};
+        let url="../device_file_servlet_action";
+        message.id=modifyid;
+        let newDeviceNum=document.getElementById("newDeviceNum").value;
+        let newDeviceLocation=document.getElementById("newDeviceLocation").value;
+        let newDeviceStatus=document.getElementById("newDeviceStatus").value;
+
+        message.Action='modifyDeviceInfo';
+        message.deviceNum=newDeviceNum;
+        message.deviceLocation=newDeviceLocation;
+        message.deviceStatus=newDeviceStatus;
+
+        document.getElementById("modify_tip").style.display="none";
+        $.post(url,message,function(json){
+            if(json.ok===200){
+                alert("修改成功!");
+                // 重新加载页面
+                window.location.reload();
+            }else{
+                alert("修改失败，请确定联网，稍后重试!");
+            }
+        });
+
+    }
+
+    function DeleteDevice(id){
+        if(confirm("您确定要删除这条记录吗？")){
+            if(id>-1){
+                let url="../device_file_servlet_action";
+                let message={};
+                message.Action="deleteInfo";
+                message.id=id;
+                message.tableName="deviceInfo";
+                $.post(url,message,function(json){
+                    if(json.ok===200){
+                        alert("删除成功");
+                        // 重新加载页面
+                        window.location.reload();
+                    }else{
+                        alert("删除失败，请确定联网，稍后重试!");
+                    }
+                });
+            }
+        }
+    }
+</script>
+</html>

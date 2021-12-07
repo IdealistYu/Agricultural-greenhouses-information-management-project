@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<script language="JavaScript" src="../js/jquery.js" type=""></script>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts 统计</title>
+    <!-- 引入 echarts.js -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+</head>
+
+<body onload="init()" style="position:relative; width: 100%; height: 100%;">
+    <div id="main" style="position:relative; width: 88%; height: 500px;"></div>
+</body>
+
+<script type="text/javascript">
+
+    function init(){
+        alert("开始统计");
+        let url="../login_file_ServletAction";
+        let message={};
+        message.Action="statisticsUserInfo";
+        $.post(url,message,function (json){
+            if(json.ok===200){
+                console.log(json);
+                initTable(json);
+                alert("统计成功!");
+            } else {
+                alert("统计失败!");
+            }
+        });
+    }
+
+    function initTable(json){
+        // console.log(json);
+        let myChart = echarts.init(document.getElementById('main'));
+        const option = {
+            color: ['#30c4de'],
+            title: {
+                text: 'UserInfo Statistic/用户信息统计'
+            },
+            tooltip: {},
+            legend: {
+                data: ['用户信息']
+            },
+            xAxis: {
+                data: ["用户总数量", "管理员数量", "普通管理员数量", "普通用户数量", "目前申请用户数量"]
+            },
+            yAxis: {},
+            series: [{
+                name: '用户信息',
+                type: 'bar',
+                data: [json.sumNum, json.manager, json.generalManager, json.generalUser, json.applyNum]
+            }]
+        };
+        myChart.setOption(option);
+    }
+</script>
+
+</html>

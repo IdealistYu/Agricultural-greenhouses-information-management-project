@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>产出模块</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/dataTables.bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+    <link href="../css/style.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        .AddSure{
+            width:96px; height:35px; line-height:35px; color:#fff; background:url(../images/btnbg1.png) repeat-x; font-size:14px; font-weight:bold;border-radius: 3px; cursor:pointer;
+        }
+    </style>
+</head>
+
+
+<body onload="initDataTable()">
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">大棚管理</a></li>
+        <li><a href="#">产出数据</a></li>
+    </ul>
+</div>
+<!--位置导航-->
+
+<div class="rightinfo" style="width: 88%">
+    <div class="tools">
+        <ul class="toolbar">
+            <li onclick="AddMatureCropShow()"><img src="../images/t01.png" />添加</li>
+            <li onclick="DeleteAndModifyMatureCrop()"><img src="../images/t03.png" />删除</li>
+            <li onclick="Query()"><img src="../images/search.png" />查询</li>
+            <li onclick="DeleteAndModifyMatureCrop()"><img src="../images/t02.png" />修改</li>
+            <li onclick="ExportMatureCrop()"><img src="../images/export.png" />导出</li>
+            <li onclick="PrintMatureCropTable()"><img src="../images/print.png" />打印</li>
+            <li onclick="SortShow()"><img src="../images/sort.png" />排序</li>
+            <li onclick="StatisticsShow()"><img src="../images/t04.png" />统计</li>
+        </ul>
+    </div>
+    <!--工具栏-->
+
+    <div>
+        <div style="margin:10px;padding-right:0">
+            <table class="table table-striped table-bordered table-hover datatable" id="record_list">
+                <thead>
+                <tr>
+                    <th class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#record_list .checkboxes" /></th>
+                    <th>收获作物ID</th>
+                    <th>收获作物名称</th>
+                    <th>作物数量(kg)</th>
+                    <th>作物状态</th>
+                    <th>作物备注</th>
+                    <th>作物录入时间</th>
+                    <th>修改/删除</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <!--datatable数据显示-------------------------------------------------------------------------------------------->
+
+    <!--提示信息,class中定义其为不可见的-->
+    <!--增加-------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="add_mature_crop_tip" style="background: turquoise" >
+        <div class="tiptop"><span>增加提示</span><a></a></div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">收获作物名称</label>
+            <label>
+                <input id="maturecrop_name" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">作物数量(kg)</label>
+            <label>
+                <input id="maturecrop_number" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">作物状态</label>
+            <label>
+                <input id="maturecrop_status" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">作物备注</label>
+            <label>
+                <input id="maturecrop_remark" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">作物录入时间</label>
+            <label>
+                <input id="maturecrop_datetime" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="AddSure" value="添加" onclick="AddMatureCropRecord()"/>
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <!-- 修改------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="modify_mature_crop_tip" style="background: turquoise; height: 650px; top: 0;width: 40%" >
+        <div class="tiptop"><span>修改提示</span><a></a></div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原收获作物名称:</label>
+                <b id="oldmaturecrop_name">maturecrop_name</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新收获作物名称:</label>
+                <label>
+                    <input type="text" id="newmaturecrop_name">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原作物数量（kg）:</label>
+                <b id="oldmaturecrop_number">maturecrop_number</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新作物数量（kg）:</label>
+                <label>
+                    <input type="text" id="newmaturecrop_number">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原作物状态:</label>
+                <b id="oldmaturecrop_status">maturecrop_status</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新作物状态:</label>
+                <label>
+                    <input type="text" id="newmaturecrop_status">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原作物备注:</label>
+                <b id="oldmaturecrop_remark">maturecrop_remark</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新作物备注:</label>
+                <label>
+                    <input type="text" id="newmaturecrop_remark">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原作物录入时间:</label>
+                <b id="oldmaturecrop_datetime">maturecrop_datetime</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新作物录入时间:</label>
+                <label>
+                    <input type="text" id="newmaturecrop_datetime">
+                </label>
+            </div>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="AddSure" style="position:relative; left: 50%; right: 50%;" value="修改" onclick="ModifyMatureCropRecord()"/>
+        </div>
+
+    </div>
+
+    <!--查询-------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="Query">
+        <div class="tiptop"><span>查询提示</span><a></a></div>
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p id="">在表格右上方中的查询栏输入任意字段进行查询</p>
+            </div>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <!--导出------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="export_file_tip">
+        <div class="tiptop"><span>导出提示</span><a></a></div>
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p id="flag"></p>
+                <cite><a href="" id="txtDownLoadHref">[点击下载txt]</a></cite>
+                <cite><a href="" id="excelDownLoadHref">[点击下载excel]</a></cite>
+            </div>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <!--排序-------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="Sort_tip">
+        <div class="tiptop"><span>排序提示</span><a></a></div>
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p> 请直接点击表中的属性名进行排序</p>
+            </div>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+    </div>
+
+    <!--统计-------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="Statistics_tip">
+        <div class="tiptop"><span>统计提示</span><a></a></div>
+        <div class="tipbtn">
+            <input name="" type="button"  class="StatisticsSure" value="开始统计" onclick="StatisticsShow()"/>
+        </div>
+    </div>
+
+</div>
+<!--datatable-->
+</body>
+<!-- END BODY -->
+</html>
+
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery.uniform.min.js"></script>
+<script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+
+<script>
+    //添加--------------------------------------------------------------------------------------------------------------
+    function AddMatureCropShow(){
+        let addTip=document.getElementById("add_mature_crop_tip");
+        addTip.style.display="block";
+    }
+    // 目前还为对输入的合法性进行验证
+    function AddMatureCropRecord(){
+        let maturecrop_name=document.getElementById("maturecrop_name").value;
+        let maturecrop_number=document.getElementById("maturecrop_number").value;
+        let maturecrop_status=document.getElementById("maturecrop_status").value;
+        let maturecrop_remark=document.getElementById("maturecrop_remark").value;
+        let maturecrop_datetime=document.getElementById("maturecrop_datetime").value;
+        if(maturecrop_name==="" || maturecrop_number===""||maturecrop_status===""||maturecrop_remark===""||maturecrop_datetime===""){
+            alert("请填写完整信息");
+        }
+        let message={};
+        message.Action="add_mature_crop_record";
+        message.maturecrop_name=maturecrop_name;
+        message.greenhouse_id=Child_id;
+        message.maturecrop_number=maturecrop_number;
+        message.maturecrop_status=maturecrop_status;
+        message.maturecrop_remark=maturecrop_remark;
+        message.maturecrop_datetime=maturecrop_datetime;
+        let url="../maturecropModule_file_servlet_action";
+        $.post(url,message,function(json){
+            if(json.ok===200){
+                // 重新加载页面
+                alert("添加成功!");
+                window.location.reload();
+            }else{
+                alert("添加失败，请确定联网，稍后重试!");
+            }
+        })
+
+    }
+
+    //删除或修改---------------------------------------------------------------------------------------------------------
+    function DeleteAndModifyMatureCrop(){
+        alert("请在表格最后一栏中直接删除或修改");
+    }
+    // 删除
+    function DeleteMatureCropRecord(id){
+        if(confirm("您确定要删除这条记录吗？")){
+            if(id>-1){
+                let url="../maturecropModule_file_servlet_action";
+                let message={};
+                message.Action="delete_mature_crop_record";
+                message.id=id;
+                message.tableName="maturecrop_file";
+                $.post(url,message,function(json){
+                    if(json.ok===200){
+                        // 重新加载页面
+                        alert("删除成功");
+                        window.location.reload();
+                    }else{
+                        alert("删除失败，请确定联网，稍后重试!");
+                    }
+                });
+            }
+        }
+    }
+    //修改--------------------------------------------------------------------------------------------------------------
+    let Modify_id;
+    function ModifyMatureCropShow(id){
+        Modify_id=id;
+        document.getElementById("modify_mature_crop_tip").style.display="block";
+        for(let i=0;i<resultList.length;i++){
+            if(id==resultList[i].maturecrop_id){
+                document.getElementById("oldmaturecrop_name").innerText=resultList[i].maturecrop_name;
+                document.getElementById("oldmaturecrop_number").innerText=resultList[i].maturecrop_number;
+                document.getElementById("oldmaturecrop_status").innerText=resultList[i].maturecrop_status;
+                document.getElementById("oldmaturecrop_remark").innerText=resultList[i].maturecrop_remark;
+                document.getElementById("oldmaturecrop_datetime").innerText=resultList[i].maturecrop_datetime;
+            }
+        }
+    }
+    function ModifyMatureCropRecord(){
+        let message={};
+        let url="../maturecropModule_file_servlet_action";
+        message.id=Modify_id;
+        let newmaturecrop_name=document.getElementById("newmaturecrop_name").value;
+        let newmaturecrop_number=document.getElementById("newmaturecrop_number").value;
+        let newmaturecrop_status=document.getElementById("newmaturecrop_status").value;
+        let newmaturecrop_remark=document.getElementById("newmaturecrop_remark").value;
+        let newmaturecrop_datetime=document.getElementById("newmaturecrop_datetime").value;
+        message.Action='modify_mature_crop_record';
+        message.maturecrop_name=newmaturecrop_name;
+        message.maturecrop_number=newmaturecrop_number;
+        message.maturecrop_status=newmaturecrop_status;
+        message.maturecrop_remark=newmaturecrop_remark;
+        message.maturecrop_datetime=newmaturecrop_datetime;
+        console.log(message);
+        document.getElementById("modify_mature_crop_tip").style.display="none";
+        $.post(url,message,function(json){
+            if(json.ok===200){
+                alert("修改成功!");
+                // 重新加载页面
+                window.location.reload();
+            }else{
+                alert("修改失败，请确定联网，稍后重试!");
+            }
+        });
+    }
+
+    //查询--------------------------------------------------------------------------------------------------------------
+    function Query(){
+        document.getElementById("Query").style.display="block";
+    }
+
+    //导出--------------------------------------------------------------------------------------------------------------
+    function ExportMatureCrop() {
+        alert("开始导出!");
+        let tip=document.getElementById("export_file_tip");
+        // 建议JAVA后端查询得到的JSON直接导出，而不是前端向后端传递JSON再导出
+        let message = {};
+        let url = "../maturecropModule_file_servlet_action";
+        message.Action = "exportFile";
+        // 传入大棚ID
+        message.value=Child_id;
+        $.post(url, message, function (json) {
+            if (json.ok === 200) {
+                // 显示tip
+                tip.style.display="block";
+                document.getElementById("flag").innerText="导出成功!";
+                $("#txtDownLoadHref").attr("href",json.txtDownloadPath);
+                $("#excelDownLoadHref").attr("href",json.excelDownloadPath);
+            } else {
+                tip.style.display="block";
+                document.getElementById("flag").innerText="导出失败!";
+            }
+        });
+    }
+    //打印--------------------------------------------------------------------------------------------------------------
+    function PrintMatureCropTable(){
+        alert("即将前往Print");
+        window.parent.location.href="printmaturecroptable.html?value="+Child_id;
+    }
+    //排序--------------------------------------------------------------------------------------------------------------
+    function SortShow(){
+        alert("请直接点击表中的属性名进行排序");
+        document.getElementById("Sort_tip").style.display="block";
+    }
+
+    //统计--------------------------------------------------------------------------------------------------------------
+    function StatisticsShow(){
+        alert("开始统计");
+        window.location.href="statisticmaturecrop.html?value="+Child_id;
+    }
+
+
+    //获取大棚页面传入id-------------------------------------------------------------------------------------------------------
+    function getParent_id(){
+        var result;
+        var url=decodeURI(window.location.search); //获取url中"?"符后的字串
+        if(url.indexOf("?") != -1) {
+            result = url.substr(url.indexOf("=")+1);
+        }
+        return result;
+    }
+    let Child_id=getParent_id();
+
+    // 保存当前的dataTable信息
+    let type=this.location.search;
+    let data=type.split("sort=");
+    let sort=data[1];
+    // 获取上页传入的信息
+    sort=decodeURI(sort);
+
+    function initDataTable(){
+        // 全局设置监听
+        $(".sure").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        // 2.弹窗的取消
+        $(".cancel").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        $(".tiptop a").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        // 初始化DataTable！
+        init();
+    }
+
+    var resultList=[];
+    //获取作物信息-------------------------------------------------------------------------------------------------------
+    function init(){
+        $('.datatable').dataTable({
+            "paging": true,
+            "searching": true,
+            "retrieve":true,
+            // "destroy":true,
+            "oLanguage": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "sProcessing": "处理中...",
+                "sLengthMenu": "_MENU_ 记录/页",
+                "sZeroRecords": "没有匹配的记录",
+                "sInfo": "显示第 _START_ 至 _END_ 项记录，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示第 0 至 0 项记录，共 0 项",
+                "sInfoFiltered": "(由 _MAX_ 项记录过滤)",
+                "sInfoPostFix": "",
+                "sSearch": "查询:",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上页",
+                    "sNext": "下页",
+                    "sLast": "末页"
+                }
+            },
+            "aoColumns": [{
+                "mRender": function (data, type, full) {
+                    sReturn = '<input type="checkbox" class="checkboxes" value="' + data + '"/>';
+                    return sReturn;
+                }, "orderable": false
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.maturecrop_id+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.maturecrop_name+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },  {
+                "mRender": function (data, type, full) {
+                    sReturn ="<div>"+full.maturecrop_number+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.maturecrop_status+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.maturecrop_remark+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.maturecrop_datetime+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    resultList.push(full);
+                    sReturn = "<a href=\"javascript:ModifyMatureCropShow("+full.maturecrop_id+")\">【修改记录】</a><a href=\"javascript:DeleteMatureCropRecord(" + full.maturecrop_id + ")\">【删除记录】</a>";
+                    return sReturn;
+                }, "orderable": true
+            }
+            ],
+            "aLengthMenu": [[5, 10, 15, 20, 25, 40, 50, -1], [5, 10, 15, 20, 25, 40, 50, "所有记录"]],
+            "fnDrawCallback": function () {
+                $(".checkboxes").uniform();
+                $(".group-checkable").uniform();
+            },
+            "sAjaxSource": "../maturecropModule_file_servlet_action?Action=getMaturecropRecordList&value="+Child_id
+
+        });
+        $('.datatable').find('.group-checkable').change(function () {
+            var set = jQuery(this).attr("data-set");
+            var checked = jQuery(this).is(":checked");
+            jQuery(set).each(function () {
+                if (checked) {
+                    $(this).attr("checked", true);
+                    $(this).parents('tr').addClass("active");
+                } else {
+                    $(this).attr("checked", false);
+                    $(this).parents('tr').removeClass("active");
+                }
+            });
+            jQuery.uniform.update(set);
+        });
+        $('.datatable').on('change', 'tbody tr .checkboxes', function () {
+            $(this).parents('tr').toggleClass("active");
+        });
+    }
+</script>

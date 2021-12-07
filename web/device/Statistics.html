@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<script language="JavaScript" src="../js/jquery.js" type=""></script>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts 统计</title>
+    <!-- 引入 echarts.js -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+</head>
+<link rel="stylesheet" type="text/css" href="../css/dataTables.bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<body onload="init()" style="position:relative; width: 100%; height: 100%;">
+<div class="tools">
+
+    <ul class="toolbar">
+        <li onclick="window.location.href='deviceDatatable.html'"><img src="../images/back.png" />返回</li>
+
+    </ul>
+</div>
+<div id="main" style="position:relative; width: 88%; height: 500px;"></div>
+</body>
+
+<script type="text/javascript">
+
+    function init(){
+        alert("开始统计");
+        let url="../device_file_servlet_action";
+        let message={};
+        message.Action="StatisticsDeviceInfo";
+        $.post(url,message,function (json){
+            if(json.ok===200){
+                console.log(json);
+                initTable(json);
+                alert("统计成功!");
+            } else {
+                alert("统计失败!");
+            }
+        });
+    }
+
+    function initTable(json){
+        let myChart = echarts.init(document.getElementById('main'));
+        const option = {
+            color: ['#309bde'],
+            title: {
+                text: 'deviceInfo Statistic/设备信息统计'
+            },
+            tooltip: {},
+            legend: {
+                data: ['设备信息']
+            },
+            xAxis: {
+                data: ["设备总数量", "1号大棚设备数量", "2号大棚设备数量", "温度计数量", "湿度计数量","计时器数量"]
+            },
+            yAxis: {},
+            series: [{
+                name: '用户信息',
+                type: 'bar',
+                data: [json.sumNum, json.一号大棚, json.二号大棚, json.温度计, json.湿度计,json.计时器]
+            }]
+        };
+        myChart.setOption(option);
+    }
+</script>
+
+</html>

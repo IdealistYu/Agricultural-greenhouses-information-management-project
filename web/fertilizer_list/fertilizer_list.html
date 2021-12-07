@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>化肥模块</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/dataTables.bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+    <link href="../css/style.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        .AddSure{
+            width:96px; height:35px; line-height:35px; color:#fff; background:url(../images/btnbg1.png) repeat-x; font-size:14px; font-weight:bold;border-radius: 3px; cursor:pointer;
+        }
+    </style>
+</head>
+
+
+<body onload="initDataTable()">
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">大棚管理</a></li>
+        <li><a href="#">化肥数据</a></li>
+    </ul>
+</div>
+<!--位置导航-->
+
+<div class="rightinfo" style="width: 88%">
+    <div class="tools">
+        <ul class="toolbar">
+            <li onclick="AddFertilizerShow()"><img src="../images/t01.png" />添加</li>
+            <li onclick="DeleteAndModifyFertilizer()"><img src="../images/t03.png" />删除</li>
+            <li onclick="Query()"><img src="../images/search.png" />查询</li>
+            <li onclick="DeleteAndModifyFertilizer()"><img src="../images/t02.png" />修改</li>
+            <li onclick="ExportFertilizer()"><img src="../images/export.png" />导出</li>
+            <li onclick="PrintFertilizerTable()"><img src="../images/print.png" />打印</li>
+            <li onclick="SortShow()"><img src="../images/sort.png" />排序</li>
+            <li onclick="StatisticsShow()"><img src="../images/t04.png" />统计</li>
+        </ul>
+    </div>
+    <!--工具栏-->
+
+    <div>
+        <div style="margin:10px;padding-right:0">
+            <table class="table table-striped table-bordered table-hover datatable" id="record_list">
+                <thead>
+                <tr>
+                    <th class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#record_list .checkboxes" /></th>
+                    <th>化肥ID</th>
+                    <th>化肥名称</th>
+                    <th>化肥数量(kg)</th>
+                    <th>使用化肥时间</th>
+                    <th>化肥状态</th>
+                    <th>化肥备注</th>
+                    <th>化肥录入时间</th>
+                    <th>修改/删除</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <!--datatable数据显示-------------------------------------------------------------------------------------------->
+
+    <!--提示信息,class中定义其为不可见的-->
+    <!--增加-------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="add_fertilizer_tip" style="background: turquoise" >
+        <div class="tiptop"><span>增加提示</span><a></a></div>
+
+        <div style="position:relative; width: 80%; height: 10%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">化肥名称</label>
+            <label>
+                <input id="fertilizer_name" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 10%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">化肥数量(kg)</label>
+            <label>
+                <input id="fertilizer_number" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 10%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">使用化肥时间</label>
+            <label>
+                <input id="fertilizer_use_datetime" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 10%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">化肥状态</label>
+            <label>
+                <input id="fertilizer_status" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 10%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 40%; float: left">化肥备注</label>
+            <label>
+                <input id="fertilizer_remark" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 10%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+        <label style="position: relative; width: 40%; float: left">化肥录入时间</label>
+        <label>
+            <input id="fertilizer_datetime" type="text" style="position:relative; width: 80%; float: left" value="">
+        </label>
+    </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="AddSure" value="添加" onclick="AddFertilizerRecord()"/>
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <!-- 修改------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="modify_fertilizer_tip" style="background: turquoise; height: 650px; top: 0;width: 40%" >
+        <div class="tiptop"><span>修改提示</span><a></a></div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原化肥名称:</label>
+                <b id="oldfertilizer_name">fertilizer_name</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新化肥名称:</label>
+                <label>
+                    <input type="text" id="newfertilizer_name">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原化肥数量（kg）:</label>
+                <b id="oldfertilizer_number">fertilizer_number</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新化肥数量（kg）:</label>
+                <label>
+                    <input type="text" id="newfertilizer_number">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原使用化肥时间:</label>
+                <b id="oldfertilizer_use_datetime">fertilizer_use_datetime</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新使用化肥时间:</label>
+                <label>
+                    <input type="text" id="newfertilizer_use_datetime">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原化肥状态:</label>
+                <b id="oldfertilizer_status">fertilizer_status</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新化肥状态:</label>
+                <label>
+                    <input type="text" id="newfertilizer_status">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原化肥备注:</label>
+                <b id="oldfertilizer_remark">fertilizer_remark</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新化肥备注:</label>
+                <label>
+                    <input type="text" id="newfertilizer_remark">
+                </label>
+            </div>
+        </div>
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原化肥录入时间:</label>
+                <b id="oldfertilizer_datetime">fertilizer_datetime</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新化肥录入时间:</label>
+                <label>
+                    <input type="text" id="newfertilizer_datetime">
+                </label>
+            </div>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="AddSure" style="position:relative; left: 50%; right: 50%;" value="修改" onclick="ModifyFertilizerRecord()"/>
+        </div>
+
+    </div>
+
+    <!--查询-------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="Query">
+        <div class="tiptop"><span>查询提示</span><a></a></div>
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p id="">在表格右上方中的查询栏输入任意字段进行查询</p>
+            </div>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <!--导出------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="export_file_tip">
+        <div class="tiptop"><span>导出提示</span><a></a></div>
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p id="flag"></p>
+                <cite><a href="" id="txtDownLoadHref">[点击下载txt]</a></cite>
+                <cite><a href="" id="excelDownLoadHref">[点击下载excel]</a></cite>
+            </div>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <!--排序-------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="Sort_tip">
+        <div class="tiptop"><span>排序提示</span><a></a></div>
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p> 请直接点击表中的属性名进行排序</p>
+            </div>
+        </div>
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+    </div>
+
+    <!--统计-------------------------------------------------------------------------------------------------------->
+    <div class="tip" id="Statistics_tip">
+        <div class="tiptop"><span>统计提示</span><a></a></div>
+        <div class="tipbtn">
+            <input name="" type="button"  class="StatisticsSure" value="开始统计" onclick="StatisticsShow()"/>
+        </div>
+    </div>
+
+</div>
+<!--datatable-->
+</body>
+<!-- END BODY -->
+</html>
+
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery.uniform.min.js"></script>
+<script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+
+<script>
+    //添加--------------------------------------------------------------------------------------------------------------
+    function AddFertilizerShow(){
+        let addTip=document.getElementById("add_fertilizer_tip");
+        addTip.style.display="block";
+    }
+    // 目前还为对输入的合法性进行验证
+    function AddFertilizerRecord(){
+        let fertilizer_name=document.getElementById("fertilizer_name").value;
+        let fertilizer_number=document.getElementById("fertilizer_number").value;
+        let fertilizer_use_datetime=document.getElementById("fertilizer_use_datetime").value;
+        let fertilizer_status=document.getElementById("fertilizer_status").value;
+        let fertilizer_remark=document.getElementById("fertilizer_remark").value;
+        let fertilizer_datetime=document.getElementById("fertilizer_datetime").value;
+        if(fertilizer_name==="" || fertilizer_number===""||fertilizer_use_datetime===""||fertilizer_status===""||fertilizer_remark===""||fertilizer_datetime===""){
+            alert("请填写完整信息");
+        }
+        let message={};
+        message.Action="add_fertilizer_record";
+        message.fertilizer_name=fertilizer_name;
+        message.greenhouse_id=Child_id;
+        message.fertilizer_number=fertilizer_number;
+        message.fertilizer_use_datetime=fertilizer_use_datetime;
+        message.fertilizer_status=fertilizer_status;
+        message.fertilizer_remark=fertilizer_remark;
+        message.fertilizer_datetime=fertilizer_datetime;
+        let url="../fertilizerModule_file_servlet_action";
+        $.post(url,message,function(json){
+            if(json.ok===200){
+                // 重新加载页面
+                alert("添加成功!");
+                window.location.reload();
+            }else{
+                alert("添加失败，请确定联网，稍后重试!");
+            }
+        })
+
+    }
+
+    //删除或修改---------------------------------------------------------------------------------------------------------
+    function DeleteAndModifyFertilizer(){
+        alert("请在表格最后一栏中直接删除或修改");
+    }
+    // 删除
+    function DeleteFertilizerRecord(id){
+        if(confirm("您确定要删除这条记录吗？")){
+            if(id>-1){
+                let url="../fertilizerModule_file_servlet_action";
+                let message={};
+                message.Action="delete_fertilizer_record";
+                message.id=id;
+                message.tableName="fertilizer_file";
+                $.post(url,message,function(json){
+                    if(json.ok===200){
+                        // 重新加载页面
+                        alert("删除成功");
+                        window.location.reload();
+                    }else{
+                        alert("删除失败，请确定联网，稍后重试!");
+                    }
+                });
+            }
+        }
+    }
+    //修改--------------------------------------------------------------------------------------------------------------
+    let Modify_id;
+    function ModifyFertilizerShow(id){
+        Modify_id=id;
+        document.getElementById("modify_fertilizer_tip").style.display="block";
+        for(let i=0;i<resultList.length;i++){
+            if(id==resultList[i].fertilizer_id){
+                document.getElementById("oldfertilizer_name").innerText=resultList[i].fertilizer_name;
+                document.getElementById("oldfertilizer_number").innerText=resultList[i].fertilizer_number;
+                document.getElementById("oldfertilizer_use_datetime").innerText=resultList[i].fertilizer_use_datetime;
+                document.getElementById("oldfertilizer_status").innerText=resultList[i].fertilizer_status;
+                document.getElementById("oldfertilizer_remark").innerText=resultList[i].fertilizer_remark;
+                document.getElementById("oldfertilizer_datetime").innerText=resultList[i].fertilizer_datetime;
+            }
+        }
+    }
+    function ModifyFertilizerRecord(){
+        let message={};
+        let url="../fertilizerModule_file_servlet_action";
+        message.id=Modify_id;
+        let newfertilizer_name=document.getElementById("newfertilizer_name").value;
+        let newfertilizer_number=document.getElementById("newfertilizer_number").value;
+        let newfertilizer_use_datetime=document.getElementById("newfertilizer_use_datetime").value;
+        let newfertilizer_status=document.getElementById("newfertilizer_status").value;
+        let newfertilizer_remark=document.getElementById("newfertilizer_remark").value;
+        let newfertilizer_datetime=document.getElementById("newfertilizer_datetime").value;
+        message.Action='modify_fertilizer_record';
+        message.fertilizer_name=newfertilizer_name;
+        message.fertilizer_number=newfertilizer_number;
+        message.fertilizer_use_datetime=newfertilizer_use_datetime;
+        message.fertilizer_status=newfertilizer_status;
+        message.fertilizer_remark=newfertilizer_remark;
+        message.fertilizer_datetime=newfertilizer_datetime;
+        console.log(message);
+        document.getElementById("modify_fertilizer_tip").style.display="none";
+        $.post(url,message,function(json){
+            if(json.ok===200){
+                alert("修改成功!");
+                // 重新加载页面
+                window.location.reload();
+            }else{
+                alert("修改失败，请确定联网，稍后重试!");
+            }
+        });
+    }
+
+    //查询--------------------------------------------------------------------------------------------------------------
+    function Query(){
+        document.getElementById("Query").style.display="block";
+    }
+
+    //导出--------------------------------------------------------------------------------------------------------------
+    function ExportFertilizer() {
+        alert("开始导出!");
+        let tip=document.getElementById("export_file_tip");
+        // 建议JAVA后端查询得到的JSON直接导出，而不是前端向后端传递JSON再导出
+        let message = {};
+        let url = "../fertilizerModule_file_servlet_action";
+        message.Action = "exportFile";
+        // 传入大棚ID
+        message.value=Child_id;
+        $.post(url, message, function (json) {
+            if (json.ok === 200) {
+                // 显示tip
+                tip.style.display="block";
+                document.getElementById("flag").innerText="导出成功!";
+                $("#txtDownLoadHref").attr("href",json.txtDownloadPath);
+                $("#excelDownLoadHref").attr("href",json.excelDownloadPath);
+            } else {
+                tip.style.display="block";
+                document.getElementById("flag").innerText="导出失败!";
+            }
+        });
+    }
+    //打印--------------------------------------------------------------------------------------------------------------
+    function PrintFertilizerTable(){
+        alert("即将前往Print");
+        window.parent.location.href="printfertilizertable.html?value="+Child_id;
+    }
+    //排序--------------------------------------------------------------------------------------------------------------
+    function SortShow(){
+        alert("请直接点击表中的属性名进行排序");
+        document.getElementById("Sort_tip").style.display="block";
+    }
+
+    //统计--------------------------------------------------------------------------------------------------------------
+    function StatisticsShow(){
+        alert("开始统计");
+        window.location.href="statisticfertilizer.html?value="+Child_id;
+    }
+
+
+    //获取大棚页面传入id-------------------------------------------------------------------------------------------------------
+    function getParent_id(){
+        var result;
+        var url=decodeURI(window.location.search); //获取url中"?"符后的字串
+        if(url.indexOf("?") != -1) {
+            result = url.substr(url.indexOf("=")+1);
+        }
+        return result;
+    }
+    let Child_id=getParent_id();
+
+    // 保存当前的dataTable信息
+    let type=this.location.search;
+    let data=type.split("sort=");
+    let sort=data[1];
+    // 获取上页传入的信息
+    sort=decodeURI(sort);
+
+    function initDataTable(){
+        // 全局设置监听
+        $(".sure").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        // 2.弹窗的取消
+        $(".cancel").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        $(".tiptop a").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        // 初始化DataTable！
+        init();
+    }
+
+    var resultList=[];
+    //获取化肥信息-------------------------------------------------------------------------------------------------------
+    function init(){
+        $('.datatable').dataTable({
+            "paging": true,
+            "searching": true,
+            "retrieve":true,
+            // "destroy":true,
+            "oLanguage": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "sProcessing": "处理中...",
+                "sLengthMenu": "_MENU_ 记录/页",
+                "sZeroRecords": "没有匹配的记录",
+                "sInfo": "显示第 _START_ 至 _END_ 项记录，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示第 0 至 0 项记录，共 0 项",
+                "sInfoFiltered": "(由 _MAX_ 项记录过滤)",
+                "sInfoPostFix": "",
+                "sSearch": "查询:",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上页",
+                    "sNext": "下页",
+                    "sLast": "末页"
+                }
+            },
+            "aoColumns": [{
+                "mRender": function (data, type, full) {
+                    sReturn = '<input type="checkbox" class="checkboxes" value="' + data + '"/>';
+                    return sReturn;
+                }, "orderable": false
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.fertilizer_id+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.fertilizer_name+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },  {
+                "mRender": function (data, type, full) {
+                    sReturn ="<div>"+full.fertilizer_number+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.fertilizer_use_datetime+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.fertilizer_status+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.fertilizer_remark+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.fertilizer_datetime+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    resultList.push(full);
+                    sReturn = "<a href=\"javascript:ModifyFertilizerShow("+full.fertilizer_id+")\">【修改记录】</a><a href=\"javascript:DeleteFertilizerRecord(" +full.fertilizer_id+ ")\">【删除记录】</a>";
+                    return sReturn;
+                }, "orderable": true
+            }
+            ],
+            "aLengthMenu": [[5, 10, 15, 20, 25, 40, 50, -1], [5, 10, 15, 20, 25, 40, 50, "所有记录"]],
+            "fnDrawCallback": function () {
+                $(".checkboxes").uniform();
+                $(".group-checkable").uniform();
+            },
+            "sAjaxSource": "../fertilizerModule_file_servlet_action?Action=getFertilizerRecordList&value="+Child_id
+
+        });
+        $('.datatable').find('.group-checkable').change(function () {
+            var set = jQuery(this).attr("data-set");
+            var checked = jQuery(this).is(":checked");
+            jQuery(set).each(function () {
+                if (checked) {
+                    $(this).attr("checked", true);
+                    $(this).parents('tr').addClass("active");
+                } else {
+                    $(this).attr("checked", false);
+                    $(this).parents('tr').removeClass("active");
+                }
+            });
+            jQuery.uniform.update(set);
+        });
+        $('.datatable').on('change', 'tbody tr .checkboxes', function () {
+            $(this).parents('tr').toggleClass("active");
+        });
+    }
+</script>

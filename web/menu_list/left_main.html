@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>left_main.html</title>
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../js/jquery.js"></script>
+
+<script type="text/javascript">
+$(function(){	
+	//导航切换
+	$(".menuson li").click(function(){
+		$(".menuson li.active").removeClass("active")
+		$(this).addClass("active");
+	});
+	
+	$('.title').click(function(){
+		var $ul = $(this).next('ul');
+		$('dd').find('ul').slideUp();
+		if($ul.is(':visible')){
+			$(this).next('ul').slideUp();
+		}else{
+			$(this).next('ul').slideDown();
+		}
+	});
+});
+// 实现页面跳转
+// function getUserRecordTable(){
+//     window.parent.frames['rightFrame'].location="../login/DataTable.html?_="+Math.random();
+// }
+//
+// function getDeviceInfo(){
+//     window.parent.frames['rightFrame'].location="../device/deviceDatatable.html?_="+Math.random();
+// }
+</script>
+
+
+</head>
+
+<body style="background:#f0f9fd;">
+	<div class="lefttop"><span></span>通讯录</div>
+    <dl class="leftmenu">
+
+    <dd>
+    <div class="title">
+    <span><img src="../images/leftico02.png" /></span>用户管理
+    </div>
+    <ul class="menuson">
+        <li><cite></cite><a href="../login/DataTable.html" target="rightFrame">查看用户</a><i></i></li>
+<!--        查看用户信息内包含内容：用户信息表（导出、排序、统计）-->
+        </ul>
+    </dd> 
+    
+    
+    <dd><div class="title"><span><img src="../images/leftico03.png" /></span>权限管理</div>
+    <ul class="menuson">
+        <li><cite></cite><a href="../login/checkDataTable.html" target="rightFrame">查看用户权限</a><i></i></li>
+        <!--        查看用户信息内包含内容：用户权限信息表（导出、排序、统计）-->
+    </ul>    
+    </dd>  
+
+
+    <dd><div class="title"><span><img src="../images/leftico04.png" /></span>大棚管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="../greenhouse/greenhouse_list.html" target="rightFrame">查看大棚</a><i></i></li>
+            <!--        查看用户信息内包含内容：大棚信息表（导出、排序、统计）-->
+        </ul>
+    </dd>
+
+    <dd><div class="title"><span><img src="../images/leftico04.png" /></span>工资管理</div>
+        <ul class="menuson">
+            <!--        查看员工信息内包含内容：大棚信息表（导出、排序、统计）-->
+            <li><cite></cite><a href="../salary/salary_table.html" target="rightFrame">查看工资</a><i></i></li>
+        </ul>
+    </dd>
+
+
+    <dd><div class="title"><span><img src="../images/leftico04.png" /></span>预警管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="../warning_module/warning_table.html" target="rightFrame">查看预警信息</a><i></i></li>
+            <!--        查看预警信息内包含内容：预警信息表（导出、排序、统计）-->
+        </ul>
+    </dd>
+
+    <dd><div class="title"><span><img src="../images/leftico04.png" /></span>设备管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="../device/deviceDatatable.html" target="rightFrame">查看设备信息</a><i></i></li>
+            <!--        查看设备信息内包含内容：设备信息表（导出、排序、统计）-->
+        </ul>
+    </dd>
+
+    <dd><div class="title"><span><img src="../images/leftico04.png" /></span>历史天气</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="#">查看历史天气</a><i></i></li>
+            <!--        查看历史天气信息内包含内容：历史天气信息表（导出、排序、统计）-->
+            <li><cite></cite><a href="#">删除历史天气</a><i></i></li>
+        </ul>
+    </dd>
+
+    <dd><div class="title"><span><img src="../images/leftico04.png" /></span>反馈</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="#">提交反馈</a><i></i></li>
+            <li><cite></cite><a href="#">查看反馈信息</a><i></i></li>
+            <!--        查看用户信息内包含内容：反馈信息表（导出、排序、统计）-->
+            <li><cite></cite><a href="#">删除反馈信息</a><i></i></li>
+        </ul>
+    </dd>
+    </dl>
+</body>
+</html>

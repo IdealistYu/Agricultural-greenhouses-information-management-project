@@ -1,0 +1,73 @@
+﻿<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style>
+  body
+  {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  #topFrame
+  {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100px;
+    width: 100%;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+
+  #leftFrame
+  {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    height: 100%;
+    width: 150px;
+    overflow: hidden;
+    vertical-align: top;
+    background-color: #D2E6FA;
+  }
+
+  #rightFrame
+  {
+    position: absolute;
+    left: 150px;
+    top: 100px;
+    height: 100%;
+    width: 100%;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background: #fff;
+  }
+</style>
+<title>信息管理系统界面</title>
+</head>
+<script src="../js/jquery.js"></script>
+<script src="../js/jquery.ba-resize.min.js"></script>
+<script src="../js/jquery.gvChart-1.0.1.min.js"></script>
+<script src="../js/jquery.idTabs.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function (){
+        $('#topFrame').attr('src','top.html?_='+Math.random());
+    });
+    $(document).ready(function (){
+        $('#rightFrame').attr('src','imgtable.html?_='+Math.random());
+    });
+</script>
+<div rows="88,*" cols="*" frameborder="no" border="0" framespacing="0">
+    <iframe src="top.html" name="topFrame" scrolling="No" noresize="noresize" id="topFrame" title="topFrame"></iframe>
+  <div cols="187,*" frameborder="no" border="0" framespacing="0">
+    <iframe src="left_main.html" name="leftFrame" scrolling="No" noresize="noresize" id="leftFrame" title="leftFrame"></iframe>
+    <iframe src="imgtable.html" name="rightFrame" id="rightFrame" title="rightFrame"></iframe>
+  </div>
+</div>
+
+</html>
+

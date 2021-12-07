@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<script language="JavaScript" src="../js/jquery.js" type=""></script>
+<head>
+    <meta charset="utf-8">
+    <title>员工工资信息统计</title>
+    <!-- 引入 echarts.js -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+</head>
+
+<body onload="init()" style="position:relative; width: 100%; height: 100%;">
+<div id="main" style="position:relative; width: 88%; height: 500px;"></div>
+</body>
+
+<script type="text/javascript">
+
+    function init(){
+        alert("开始统计");
+        let url="../salaryModule_file_servlet_action";
+        let message={};
+        message.Action="statisticSalaryRecord";
+        $.post(url,message,function (json){
+            if(json.ok===200){
+                console.log(json);
+                initTable(json);
+                alert("统计成功!");
+            } else {
+                alert("统计失败!");
+            }
+        });
+    }
+
+    function initTable(json){
+        let myChart = echarts.init(document.getElementById('main'));
+        const option = {
+            color: ['#80f4fe'],
+            title: {
+                text: 'Salary Statistic/员工工资统计信息'
+            },
+            tooltip: {},
+            legend: {
+                data: ['工资']
+            },
+            xAxis: {
+                data: ["小于3000￥", "3000~6000￥", "6000~9000￥", "9000~12000￥", "大于12000￥"]
+            },
+            yAxis: {},
+            series: [{
+                name: '工资',
+                type: 'bar',
+                data: [json.salary_1, json.salary_2, json.salary_3, json.salary_4, json.salary_5]
+            }]
+        };
+        myChart.setOption(option);
+    }
+</script>
+</html>

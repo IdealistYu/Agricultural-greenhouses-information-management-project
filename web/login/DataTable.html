@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DataTable</title>
+</head>
+<link rel="stylesheet" type="text/css" href="../css/dataTables.bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+
+<style>
+    .SortSure,.SortCancel,.AddSure{
+        width:96px; height:35px; line-height:35px; color:#fff; background:url(../images/btnbg1.png) repeat-x; font-size:14px; font-weight:bold;border-radius: 3px; cursor:pointer;
+    }
+    .SortCancel{
+        background:url(../images/btnbg2.png) repeat-x;color:#000;font-weight:normal;
+    }
+    .SortTip {
+        width: 485px;
+        height: 150px;
+        position: absolute;
+        top: 10%;
+        left: 30%;
+        background: #fcfdfd;
+        box-shadow: 1px 8px 10px 1px #9b9b9b;
+        border-radius: 1px;
+        behavior: url(../js/pie.htc);
+        display: none;
+        z-index: 111111;
+    }
+</style>
+
+<body onload="initDataTable()">
+<!--位置div-->
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">首页</a></li>
+        <li><a href="#">图片列表</a></li>
+    </ul>
+</div>
+
+<!--toolBar-->
+<div class="rightinfo">
+    <div class="tools">
+
+        <ul class="toolbar">
+            <li onclick="AddShow()"><img src="../images/t01.png" />添加</li>
+            <li onclick="DeleteAndModifyTip()"><img src="../images/t03.png" />删除</li>
+            <li onclick="DeleteAndModifyTip()"><img src="../images/t02.png" />修改</li>
+            <li onclick="Query()"><img src="../images/search.png" />查询</li>
+
+            <li onclick="Export()"><img src="../images/export.png" />导出</li>
+            <li onclick="Print()"><img src="../images/print.png" />打印</li>
+            <li onclick="SortShow()"><img src="../images/sort.png" />排序</li>
+            <li onclick="StartStatistics()"><img src="../images/t04.png" />统计</li>
+        </ul>
+
+    </div>
+
+    <div style="position: relative; width: 88%;">
+        <table class="table table-striped table-bordered table-hover datatable" id="record_list">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#record_list .checkboxes" /></th>
+                <th>用户名</th>
+                <th>mail</th>
+                <th>用户权限级别</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>注册日期</th>
+                <th>最后登录日期</th>
+                <th>用户信息最后修改日期</th>
+                <th>是否员工</th>
+                <th>修改/删除</th>
+            </tr>
+            </thead>
+            </table>
+    </div>
+
+    <!--提示信息,class中定义其为不可见的-->
+    <!--add tip-->
+    <div class="tip" id="add_tip" style="background: turquoise" >
+        <div class="tiptop"><span>增加提示</span><a></a></div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0);">
+            <label style="position: relative; width: 20%; float: left">用户名</label>
+            <label>
+                <input id="account" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">邮箱</label>
+            <label>
+                <input id="mail" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">密码</label>
+            <label>
+                <input id="password" type="text" style="position:relative; width: 80%; float: left" value="">
+            </label>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">用户等级</label>
+            <label for="userLevel"></label><select id="userLevel">
+                <option>系统管理员</option>
+                <option>普通管理员</option>
+                <option>普通用户</option>
+            </select>
+        </div>
+
+        <div style="position:relative; width: 80%; height: 12%; left: 10%; right: 10%; top: 8%; transform: translate(-10%,0)">
+            <label style="position: relative; width: 20%; float: left">是否员工</label>
+            <label for="isWorker"></label><select id="isWorker">
+                <option>是</option>
+                <option>否</option>
+            </select>
+        </div>
+
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="AddSure" value="添加" onclick="AddRecord()"/>
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <!-- 修改tip -->
+    <div class="tip" id="modify_tip" style="background: turquoise; height: 650px; top: 0" >
+        <div class="tiptop"><span>修改提示</span><a></a></div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原始用户名:</label>
+                <b id="oldAccount">oldAccount</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新用户名:</label>
+                <label>
+                    <input type="text" id="newAccount">
+                </label>
+            </div>
+        </div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原始mail:</label>
+                <b id="oldMail">oldMail</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新  mail:</label>
+                <label>
+                    <input type="text" id="newMail">
+                </label>
+            </div>
+        </div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原始用户级别:</label>
+                <b id="oldUserLevel">oldUserLevel</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新用户级别:</label>
+                <select id="newUsrLevel">
+                    <option>系统管理员</option>
+                    <option>普通管理员</option>
+                    <option>普通用户</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原始姓名:</label>
+                <b id="oldName">oldName</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新姓名:</label>
+                <label>
+                    <input type="text" id="newName">
+                </label>
+            </div>
+        </div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原始性别:</label>
+                <b id="oldGender">oldGender</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">新性别:</label>
+               <select id="newGender">
+                   <option>男</option>
+                   <option>女</option>
+               </select>
+            </div>
+        </div>
+
+        <div style="position:relative; width: 100%; height: 12%; top: 8%;">
+            <div style="position:relative;  width: 50%; float: left;">
+                <label style="position: relative;">原始是否员工:</label>
+                <b id="oldIsWorker">oldIsWorker</b>
+            </div>
+            <div style="position:relative; width: 50%; float: right">
+                <label style="position: relative;">是否员工:</label>
+                <select id="newIsWorker">
+                    <option>是</option>
+                    <option>否</option>
+                </select>
+            </div>
+        </div>
+
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="AddSure" style="position:relative; left: 50%; right: 50%;" value="修改" onclick="ModifyRecord()"/>
+        </div>
+
+    </div>
+
+    <div class="tip" id="Query">
+        <div class="tiptop"><span>查询提示</span><a></a></div>
+
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p id="">在表格右上方中的查询栏输入任意字段进行查询</p>
+            </div>
+        </div>
+
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+    <!--导出tip-->
+    <div class="tip" id="tip">
+        <div class="tiptop"><span>导出提示</span><a></a></div>
+
+        <div class="tipinfo">
+            <span><img src="../images/tip.png" /></span>
+            <div class="tipright">
+                <p id="flag"></p>
+                <cite><a href="" id="txtDownLoadHref">[点击下载txt]</a></cite>
+                <cite><a href="" id="excelDownLoadHref">[点击下载excel]</a></cite>
+            </div>
+        </div>
+
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+
+
+    <!--sort tip-->
+    <div class="SortTip" id="Sort_tip">
+        <div class="tiptop"><span>选择排序方式</span><a id="shutDown" onclick="shutDown()"></a></div>
+
+        <!--tip中的button-->
+        <div class="tipbtn">
+            <input name="" type="button"  class="SortSure" value="升序" onclick="SelectUpWay()"/>
+            <input name="" type="button"  class="SortCancel" value="降序" onclick="SelectDownWay()" />
+        </div>
+
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery.uniform.min.js"></script>
+<script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+
+<script>
+    // 保存当前的dataTable信息
+    let type=this.location.search;
+    let data=type.split("sort=");
+    let sort=data[1];
+    // 获取上页传入的信息
+    sort=decodeURI(sort);
+
+    function DeleteAndModifyTip(){
+        alert("请在表格最后一栏中直接删除或修改");
+    }
+
+    function AddShow(){
+        let addTip=document.getElementById("add_tip");
+        addTip.style.display="block";
+    }
+
+    // 目前还为对输入的合法性进行验证
+    function AddRecord(){
+        let account=document.getElementById("account").value;
+        let mail=document.getElementById("mail").value;
+        let password=document.getElementById("password").value;
+        let userLevel=document.getElementById("userLevel").value;
+        let isWorker=document.getElementById("isWorker").value;
+        if(account==="" || mail==="" || password===""){
+            alert("请填写完整信息");
+            return;
+        }
+        if(isWorker==="是"){
+            isWorker=1;
+        }else{
+            isWorker=0;
+        }
+        if(userLevel==="系统管理员"){
+            userLevel=0;
+        }else if(userLevel==="普通管理员"){
+            userLevel=1;
+        }else{
+            userLevel=2;
+        }
+        let message={};
+        message.Action="addUserInfo";
+        message.account=account;
+        message.mail=mail;
+        message.password=password;
+        message.userLevel=userLevel;
+        message.isWorker=isWorker;
+        let url="../login_file_ServletAction";
+        $.post(url,message,function(json){
+            if(json.ok===200){
+                // 重新加载页面
+                alert("添加成功!");
+                window.location.reload();
+            }else{
+                alert("添加失败，请确定联网，稍后重试!");
+            }
+        })
+
+    }
+
+    function Query(){
+        document.getElementById("Query").style.display="block";
+    }
+
+    function Export() {
+        alert("开始导出!");
+        let tip=document.getElementById("tip");
+        let message = {};
+        let url = "../login_file_ServletAction";
+        message.Action = "exportFile";
+        // 表名
+        message.tableName='accountInfo';
+        message.tag=Math.random();
+        $.post(url, message, function (json) {
+            console.log(json);
+            if (json.ok === 200) {
+                // 显示tip
+                tip.style.display="block";
+                document.getElementById("flag").innerText="导出成功!";
+                $("#txtDownLoadHref").attr("href",json.txtDownloadPath);
+                $("#excelDownLoadHref").attr("href",json.excelDownloadPath);
+            } else {
+                tip.style.display="block";
+                document.getElementById("flag").innerText="导出失败!";
+            }
+        });
+    }
+
+    function Print(){
+        alert("即将前往Print");
+       window.parent.location.href="print.html?sort="+sort;
+    }
+
+    function shutDown(){
+        document.getElementById("Sort_tip").style.display="none";
+    }
+
+    // 选择的排序方式开始
+    function SelectUpWay(){
+        sort="up";
+        document.getElementById("Sort_tip").style.display="none";
+        SortStart();
+    }
+
+
+    function SelectDownWay(){
+        sort="down";
+        document.getElementById("Sort_tip").style.display="none";
+        SortStart();
+    }
+    // 选择的排序方式结束
+
+    // 根据选择的排序方式进行排序，重新加载frame
+    function SortStart(){
+        if(sort==="up" || sort==="down"){
+            init();
+            window.location.href="DataTable.html?sort="+sort;
+        }
+    }
+    // 排序结束
+
+    function SortShow(){
+        alert("您可以通过选择排序方式，依照account进行排序，也可以之间点击下面表中的属性名，按照该属性进行排序");
+        document.getElementById("Sort_tip").style.display="block";
+    }
+
+    function initDataTable(){
+
+        // 全局设置监听
+        $(".sure").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        // 2.弹窗的取消
+        $(".cancel").click(function (){
+            $(".tip").fadeOut(100);
+        });
+        $(".tiptop a").click(function (){
+            $(".tip").fadeOut(100);
+        });
+
+        // 初始化DataTable！
+        init();
+    }
+
+    let resultList=[];
+    function init(){
+        resultList=[];
+        $('.datatable').dataTable({
+            "paging": true,
+            "searching": true,
+            "retrieve":true,
+            // "destroy":true,
+            "oLanguage": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "sProcessing": "处理中...",
+                "sLengthMenu": "_MENU_ 记录/页",
+                "sZeroRecords": "没有匹配的记录",
+                "sInfo": "显示第 _START_ 至 _END_ 项记录，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示第 0 至 0 项记录，共 0 项",
+                "sInfoFiltered": "(由 _MAX_ 项记录过滤)",
+                "sInfoPostFix": "",
+                "sSearch": "查询:",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上页",
+                    "sNext": "下页",
+                    "sLast": "末页"
+                }
+            },
+            "aoColumns": [{
+                "mRender": function (data, type, full) {
+                    console.log(full)
+                    sReturn = '<input type="checkbox" class="checkboxes" value="' + data + '"/>';
+                    return sReturn;
+                }, "orderable": false
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.account+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.mail+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    let level;
+                    if(full.userLevel==0){
+                        level="系统管理员";
+                    }else if(full.userLevel==1){
+                        level="普通管理员";
+                    }else{
+                        level="普通用户";
+                    }
+                    sReturn = "<div>"+level+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            }, {
+                "mRender": function (data, type, full) {
+                    sReturn ="<div>"+full.userName+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.userGender+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.signUpDate+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.lastLoginDate+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    sReturn = "<div>"+full.lastModifyDate+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    let temp;
+                    if(full.isWorker===1){
+                        temp="是";
+                    }else{
+                        temp="否";
+                    }
+                    sReturn = "<div>"+temp+"</div>";
+                    return sReturn;
+                }, "orderable": true
+            },{
+                "mRender": function (data, type, full) {
+                    resultList.push(full);
+                    sReturn = "<a href=\"javascript:ModifyShow("+full.id+")\">【修改记录】</a><a href=\"javascript:DeleteRecord(" + full.id + ")\">【删除记录】</a>";
+                    return sReturn;
+                }, "orderable": true
+            }
+            ],
+            "aLengthMenu": [[5, 10, 15, 20, 25, 40, 50, -1], [5, 10, 15, 20, 25, 40, 50, "所有记录"]],
+            "fnDrawCallback": function () {
+                $(".checkboxes").uniform();
+                $(".group-checkable").uniform();
+            },
+            "sAjaxSource": "../login_file_ServletAction?Action=getUserRecord&sort="+sort
+        });
+        $('.datatable').find('.group-checkable').change(function () {
+            var set = jQuery(this).attr("data-set");
+            var checked = jQuery(this).is(":checked");
+            jQuery(set).each(function () {
+                if (checked) {
+                    $(this).attr("checked", true);
+                    $(this).parents('tr').addClass("active");
+                } else {
+                    $(this).attr("checked", false);
+                    $(this).parents('tr').removeClass("active");
+                }
+            });
+            jQuery.uniform.update(set);
+        });
+        $('.datatable').on('change', 'tbody tr .checkboxes', function () {
+            $(this).parents('tr').toggleClass("active");
+        });
+    };
+
+    // 删除
+    function DeleteRecord(id){
+        if(confirm("您确定要删除这条记录吗？")){
+            if(id>-1){
+                let url="../Login_ServletAction";
+                let message={};
+                message.Action="deleteInfo";
+                message.id=id;
+                message.tableName="accountInfo";
+                $.post(url,message,function(json){
+                    if(json.ok===200){
+                        // 重新加载页面
+                        window.location.reload();
+                    }else{
+                        alert("删除失败，请确定联网，稍后重试!");
+                    }
+                });
+            }
+        }
+    }
+
+    let Modify_id;
+    // 修改
+    function ModifyShow(id){
+        let level;
+        Modify_id=id;
+        document.getElementById("modify_tip").style.display="block";
+        for(let i=0;i<resultList.length;i++){
+            if(id===resultList[i].id){
+                document.getElementById("oldAccount").innerText=resultList[i].account;
+                document.getElementById("oldMail").innerText=resultList[i].mail;
+                if(resultList[i].userLevel==0){
+                    level="系统管理员";
+                }else if(resultList[i].userLevel==1){
+                    level="普通管理员";
+                }else{
+                    level="普通用户";
+                }
+                document.getElementById("oldUserLevel").innerText=level
+                document.getElementById("oldName").innerText=resultList[i].userName;
+                document.getElementById("oldGender").innerText=resultList[i].userGender;
+                document.getElementById("oldIsWorker").innerText=resultList[i].isWorker;
+            }
+        }
+    }
+
+    function ModifyRecord(){
+        let message={};
+        let url="../login_file_ServletAction";
+        message.id=Modify_id;
+        let newAccount=document.getElementById("newAccount").value;
+        let newMail=document.getElementById("newMail").value;
+        let newUserLevel=document.getElementById("newUsrLevel").value;
+        if(newUserLevel=="系统管理员"){
+            newUserLevel=0;
+        }else if(newUserLevel=="普通管理员"){
+            newUserLevel=1;
+        }else{
+            newUserLevel=2;
+        }
+        let newName=document.getElementById("newName").value;
+        let newGender=document.getElementById("newGender").value;
+        let newIsWorker=document.getElementById("newIsWorker").value;
+        message.Action='modifyUserInfo';
+        message.account=newAccount;
+        message.mail=newMail;
+        message.userLevel=newUserLevel;
+        message.userName=newName;
+        message.userGender=newGender;
+        if(newIsWorker==="是"){
+            newIsWorker=1;
+        }else{
+            newIsWorker=0;
+        }
+        message.isWorker=newIsWorker;
+        console.log(message);
+        document.getElementById("modify_tip").style.display="none";
+        $.post(url,message,function(json){
+            if(json.ok===200){
+                alert("修改成功!");
+                // 重新加载页面
+                window.location.reload();
+            }else{
+                alert("修改失败，请确定联网，稍后重试!");
+            }
+        });
+
+    }
+
+    function StartStatistics(){
+        alert("统计");
+        window.location.href="echarts.html";
+    }
+
+</script>
+</html>
